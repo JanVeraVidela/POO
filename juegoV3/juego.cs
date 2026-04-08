@@ -133,7 +133,7 @@ class Musashi : Personaje
         }
     }
 
-    public override int GetArmadura() => 0; // Musashi no confía en armaduras
+    public override int GetArmadura() => 0;
 }
 
 // ===================== JUEGO =====================
