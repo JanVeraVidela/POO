@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>POO C# — Herencia Didáctica</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:      #0a0c10;
+    --panel:   #111318;
+    --border:  #1e2229;
+    --green:   #39d353;
+    --amber:   #e3b341;
+    --blue:    #58a6ff;
+    --purple:  #bc8cff;
+    --red:     #ff7b72;
+    --teal:    #76e3ea;
+    --muted:   #6e7681;
+    --white:   #e6edf3;
+    --dim:     #8b949e;
+  }
+
+  body {
+    background: var(--bg);
+    font-family: 'Syne', sans-serif;
+    color: var(--white);
+    min-height: 100vh;
+    padding: 32px 24px 48px;
+  }
+
+  /* ── Header ── */
+  .header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--green);
+  }
+  .header p {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-top: 4px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .pills {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+  .pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid;
+    font-weight: 700;
+  }
+  .pill-g { color: var(--green);  border-color: var(--green);  }
+  .pill-b { color: var(--blue);   border-color: var(--blue);   }
+  .pill-p { color: var(--purple); border-color: var(--purple); }
+  .pill-a { color: var(--amber);  border-color: var(--amber);  }
+  .pill-t { color: var(--teal);   border-color: var(--teal);   }
+  .pill-r { color: var(--red);    border-color: var(--red);    }
+
+  /* ── Grid principal ── */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 80px 1fr;
+    grid-template-rows: auto auto auto auto auto;
+    gap: 0;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* ── Bloques de clase ── */
+  .clase-box {
+    background: var(--panel);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+  }
+  .clase-header {
+    padding: 10px 16px 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .clase-header .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .clase-header h2 {
+    font-size: 0.85rem;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.04em;
+  }
+  .clase-header .badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    padding: 1px 7px;
+    border-radius: 10px;
+    margin-left: auto;
+    font-weight: 700;
+  }
+  .clase-body { padding: 12px 16px; }
+
+  /* secciones dentro del bloque */
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    margin: 8px 0 4px;
+    padding-bottom: 3px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-label:first-child { margin-top: 0; }
+
+  /* línea de código */
+  .line {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    line-height: 1.7;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+  .line .icon { font-size: 0.65rem; flex-shrink: 0; }
+  .kw-priv  { color: var(--red);    }
+  .kw-pub   { color: var(--blue);   }
+  .kw-virt  { color: var(--purple); }
+  .kw-over  { color: var(--amber);  }
+  .kw-green { color: var(--green);  }
+  .kw-teal  { color: var(--teal);   }
+  .kw-dim   { color: var(--dim);    }
+  .kw-white { color: var(--white);  }
+
+  /* anotación al lado */
+  .anno {
+    font-size: 0.62rem;
+    color: var(--muted);
+    font-style: italic;
+    margin-left: 4px;
+  }
+
+  /* ── Flecha central ── */
+  .arrow-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px 0;
+  }
+  .arrow-line {
+    width: 2px;
+    flex: 1;
+    background: linear-gradient(to bottom, var(--blue), var(--purple));
+    position: relative;
+  }
+  .arrow-head {
+    width: 0; height: 0;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-top: 10px solid var(--purple);
+  }
+  .arrow-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--blue);
+    font-weight: 700;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    letter-spacing: 0.1em;
+  }
+
+  /* ── Separadores de fila ── */
+  .row-gap { height: 20px; }
+
+  /* ── Bloque de concepto ── */
+  .concept-row {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 20px 0 4px;
+  }
+  .concept-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    position: relative;
+    overflow: hidden;
+  }
+  .concept-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+  .cc-green::before  { background: var(--green);  }
+  .cc-amber::before  { background: var(--amber);  }
+  .cc-purple::before { background: var(--purple); }
+  .cc-teal::before   { background: var(--teal);   }
+  .cc-red::before    { background: var(--red);    }
+  .cc-blue::before   { background: var(--blue);   }
+
+  .concept-title {
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .concept-def {
+    font-size: 0.7rem;
+    color: var(--dim);
+    line-height: 1.5;
+    margin-bottom: 6px;
+  }
+  .concept-code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    background: #0d1117;
+    border-radius: 6px;
+    padding: 6px 8px;
+    line-height: 1.6;
+    border-left: 2px solid;
+  }
+
+  /* ── Bloque de polimorfismo ── */
+  .poly-row {
+    grid-column: 1 / -1;
+    background: var(--panel);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-top: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+  .poly-row::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--green), var(--blue), var(--purple), var(--amber));
+  }
+  .poly-title {
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--green);
+    margin-bottom: 10px;
+  }
+  .poly-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+  }
+  .poly-block {
+    background: #0d1117;
+    border-radius: 8px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+  }
+  .poly-block-title {
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+  }
+
+  /* ── Bloque base vs override ── */
+  .compare-row {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 8px;
+  }
+  .compare-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .compare-title {
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    margin-top: 32px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+  }
+
+  /* ── Highlight box ── */
+  .hl {
+    display: inline;
+    background: rgba(88,166,255,0.1);
+    border-radius: 3px;
+    padding: 0 3px;
+  }
+  .hl-g { background: rgba(57,211,83,0.12); }
+  .hl-a { background: rgba(227,179,65,0.12); }
+  .hl-p { background: rgba(188,140,255,0.12); }
+  .hl-r { background: rgba(255,123,114,0.12); }
+
+  hr.div { border: none; border-top: 1px solid var(--border); margin: 8px 0; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>⚔ Herencia en C# — Mapa Completo</h1>
+  <p>juegoComentado.cs · Personaje → Barbaro · Sacerdote · Zamuray</p>
+  <div class="pills">
+    <span class="pill pill-r">Encapsulación</span>
+    <span class="pill pill-b">Herencia</span>
+    <span class="pill pill-g">Polimorfismo</span>
+    <span class="pill pill-p">virtual / override</span>
+    <span class="pill pill-a">base()</span>
+    <span class="pill pill-t">dispatch dinámico</span>
+  </div>
+</div>
+
+<!-- ═══ GRID PRINCIPAL ═══ -->
+<div class="grid">
+
+  <!-- ── CLASE PADRE ── -->
+  <div class="clase-box" style="grid-column:1; grid-row:1; border-color:#1e3a5f;">
+    <div class="clase-header" style="background:#0d1f35;">
+      <div class="dot" style="background:var(--blue)"></div>
+      <h2 style="color:var(--blue)">class Personaje</h2>
+      <span class="badge" style="color:var(--blue); border:1px solid var(--blue); background:rgba(88,166,255,0.08);">CLASE PADRE · concreta</span>
+    </div>
+    <div class="clase-body">
+
+      <div class="section-label" style="color:var(--red)">① Encapsulación — atributos private</div>
+      <div class="line"><span class="icon kw-priv">🔒</span><span class="kw-priv">private</span><span class="kw-white"> string _nombre;</span><span class="anno">// solo legible vía getter</span></div>
+      <div class="line"><span class="icon kw-priv">🔒</span><span class="kw-priv">private</span><span class="kw-white"> int _vida;</span><span class="anno">// se modifica en RecibirDanio()</span></div>
+      <div class="line"><span class="icon kw-priv">🔒</span><span class="kw-priv">private</span><span class="kw-white"> int _ataque;</span></div>
+      <div class="line"><span class="icon kw-priv">🔒</span><span class="kw-priv">private</span><span class="kw-white"> Equipo? _equipo;</span><span class="anno">// null = sin equipo</span></div>
+
+      <div class="section-label" style="color:var(--blue)">② Constructor de instancia</div>
+      <div class="line"><span class="kw-pub">public</span><span class="kw-green"> Personaje</span><span class="kw-white">(string n, int v, int a)</span></div>
+      <div class="line" style="padding-left:14px"><span class="kw-dim">// inicializa los 4 campos. equipo = null</span></div>
+      <div class="line" style="padding-left:14px"><span class="kw-dim">// las hijas lo llaman via base(n, v, a)</span></div>
+
+      <div class="section-label" style="color:var(--green)">③ Getters — única puerta al exterior</div>
+      <div class="line"><span class="kw-pub">public</span><span class="kw-white"> string </span><span class="kw-green">GetNombre</span><span class="kw-white">() => _nombre;</span></div>
+      <div class="line"><span class="kw-pub">public</span><span class="kw-white"> int </span><span class="kw-green">GetVida</span><span class="kw-white">()   => _vida;</span></div>
+
+      <div class="section-label" style="color:var(--purple)">④ Métodos virtual — el padre propone, la hija decide</div>
+      <div class="line"><span class="kw-pub">public</span><span class="kw-virt"> virtual</span><span class="kw-white"> int </span><span class="kw-purple">GetAtaque</span><span class="kw-white">()</span><span class="anno">// hija puede redefinir</span></div>
+      <div class="line"><span class="kw-pub">public</span><span class="kw-virt"> virtual</span><span class="kw-white"> int </span><span class="kw-purple">GetArmadura</span><span class="kw-white">()</span><span class="anno">// Zamuray lo overridea → 0</span></div>
+      <div class="line"><span class="kw-pub">public</span><span class="kw-virt"> virtual</span><span class="kw-white"> int </span><span class="kw-purple">CalcularDanio</span><span class="kw-white">()</span><span class="anno">// Barbaro/Zamuray lo overridean</span></div>
+      <div class="line"><span class="kw-pub">public</span><span class="kw-virt"> virtual</span><span class="kw-white"> void </span><span class="kw-purple">RecibirDanio</span><span class="kw-white">(int d)</span><span class="anno">// Sacerdote lo overridea</span></div>
+      <div class="line"><span class="kw-pub">public</span><span class="kw-virt"> virtual</span><span class="kw-white"> void </span><span class="kw-purple">AplicarDanio</span><span class="kw-white">(int d)</span><span class="anno">// llama RecibirDanio()</span></div>
+
+      <div class="section-label" style="color:var(--teal)">⑤ Métodos NO virtual — igual para todas las hijas</div>
+      <div class="line"><span class="kw-pub">public</span><span class="kw-white"> void </span><span class="kw-teal">Equipar</span><span class="kw-white">(Equipo eq)</span><span class="anno">// asigna equipo</span></div>
+      <div class="line"><span class="kw-pub">public</span><span class="kw-white"> void </span><span class="kw-teal">QuitarEquipo</span><span class="kw-white">()</span><span class="anno">// → null (Zamuray desarma)</span></div>
+      <div class="line"><span class="kw-pub">public</span><span class="kw-white"> bool </span><span class="kw-teal">EstaVivo</span><span class="kw-white">()</span><span class="anno">// _vida &gt; 0</span></div>
+
+      <hr class="div">
+      <div style="font-size:0.62rem; color:var(--muted); font-family:'JetBrains Mono',monospace;">
+        fórmula RecibirDanio: dañoFinal = Max(1, danio − armadura)<br>
+        vida = Max(0, vida − dañoFinal)
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FLECHA ── -->
+  <div class="arrow-col" style="grid-column:2; grid-row:1;">
+    <div class="arrow-label">: base(n,v,a)</div>
+    <div class="arrow-line"></div>
+    <div class="arrow-head"></div>
+    <div style="font-family:'JetBrains Mono',monospace; font-size:0.6rem; color:var(--purple); text-align:center; margin-top:6px; writing-mode:vertical-rl; transform:rotate(180deg); letter-spacing:0.08em;">herencia</div>
+  </div>
+
+  <!-- ── CLASES HIJAS ── -->
+  <div style="grid-column:3; grid-row:1; display:flex; flex-direction:column; gap:12px;">
+
+    <!-- Bárbaro -->
+    <div class="clase-box" style="border-color:#3a2200;">
+      <div class="clase-header" style="background:#1f1400;">
+        <div class="dot" style="background:var(--amber)"></div>
+        <h2 style="color:var(--amber)">class Barbaro : Personaje</h2>
+        <span class="badge" style="color:var(--amber); border:1px solid var(--amber); background:rgba(227,179,65,0.08);">CLASE HIJA</span>
+      </div>
+      <div class="clase-body">
+        <div class="section-label" style="color:var(--red)">Atributo propio — encapsulado</div>
+        <div class="line"><span class="kw-priv">private</span><span class="kw-white"> int _furia;</span><span class="anno">// no existe en Personaje</span></div>
+
+        <div class="section-label" style="color:var(--blue)">Constructor — agrega _furia</div>
+        <div class="line"><span class="kw-pub">public</span><span class="kw-green"> Barbaro</span><span class="kw-white">(string n,int v,int a,</span><span class="kw-amber" style="color:var(--amber)">int f</span><span class="kw-white">)</span></div>
+        <div class="line" style="padding-left:12px"><span class="kw-white">: </span><span class="kw-teal">base</span><span class="kw-white">(n, v, a)</span><span class="anno">// ← padre inicializa n,v,a</span></div>
+        <div class="line" style="padding-left:12px"><span class="kw-white">{ _furia = f; }</span><span class="anno">// ← hijo inicializa _furia</span></div>
+
+        <div class="section-label" style="color:var(--purple)">override CalcularDanio() — reemplaza al padre</div>
+        <div class="line"><span class="kw-pub">public</span><span class="kw-over"> override</span><span class="kw-white"> int </span><span class="kw-purple">CalcularDanio</span><span class="kw-white">()</span></div>
+        <div class="line" style="padding-left:10px; color:var(--dim);">si _furia ≥ 3 → daño × 1.15, furia −= 3</div>
+        <div class="line" style="padding-left:10px; color:var(--dim);">si _furia &lt; 3 → daño × 0.50 (cansado)</div>
+        <div class="line" style="padding-left:10px; font-size:0.62rem; color:var(--muted);">⚠ NO llama base.CalcularDanio() — reemplazo total</div>
+      </div>
+    </div>
+
+    <!-- Sacerdote -->
+    <div class="clase-box" style="border-color:#002a3a;">
+      <div class="clase-header" style="background:#00141f;">
+        <div class="dot" style="background:var(--teal)"></div>
+        <h2 style="color:var(--teal)">class Sacerdote : Personaje</h2>
+        <span class="badge" style="color:var(--teal); border:1px solid var(--teal); background:rgba(118,227,234,0.08);">CLASE HIJA</span>
+      </div>
+      <div class="clase-body">
+        <div class="section-label" style="color:var(--blue)">Constructor — sin campos propios</div>
+        <div class="line"><span class="kw-pub">public</span><span class="kw-green"> Sacerdote</span><span class="kw-white">(string n, int v, int a)</span></div>
+        <div class="line" style="padding-left:12px"><span class="kw-white">: </span><span class="kw-teal">base</span><span class="kw-white">(n, v, a) { }</span><span class="anno">// cuerpo vacío — todo en padre</span></div>
+
+        <div class="section-label" style="color:var(--purple)">override RecibirDanio() — extiende al padre</div>
+        <div class="line"><span class="kw-pub">public</span><span class="kw-over"> override</span><span class="kw-white"> void </span><span class="kw-purple">RecibirDanio</span><span class="kw-white">(int danio)</span></div>
+        <div class="line" style="padding-left:10px; color:var(--dim);">25% prob → danio /= 2  (plegaria)</div>
+        <div class="line" style="padding-left:10px;"><span class="kw-teal">base</span><span class="kw-white">.RecibirDanio(danio);</span><span class="anno">← llama al padre</span></div>
+        <div class="line" style="padding-left:10px; font-size:0.62rem; color:var(--teal);">✔ SÍ llama base — extiende sin reemplazar</div>
+      </div>
+    </div>
+
+    <!-- Zamuray -->
+    <div class="clase-box" style="border-color:#2a0030;">
+      <div class="clase-header" style="background:#160019;">
+        <div class="dot" style="background:var(--purple)"></div>
+        <h2 style="color:var(--purple)">class Zamuray : Personaje</h2>
+        <span class="badge" style="color:var(--purple); border:1px solid var(--purple); background:rgba(188,140,255,0.08);">CLASE HIJA</span>
+      </div>
+      <div class="clase-body">
+        <div class="section-label" style="color:var(--red)">Atributo propio — flag de desarme</div>
+        <div class="line"><span class="kw-priv">private</span><span class="kw-white"> bool _desarmar = false;</span></div>
+
+        <div class="section-label" style="color:var(--purple)">2 overrides + método propio</div>
+        <div class="line"><span class="kw-pub">public</span><span class="kw-over"> override</span><span class="kw-white"> int </span><span class="kw-purple">CalcularDanio</span><span class="kw-white">()</span><span class="anno">// activa flag</span></div>
+        <div class="line"><span class="kw-pub">public</span><span class="kw-over"> override</span><span class="kw-white"> int </span><span class="kw-purple">GetArmadura</span><span class="kw-white">()</span><span class="anno">// siempre retorna 0</span></div>
+        <div class="line"><span class="kw-pub">public</span><span class="kw-white"> void </span><span class="kw-green">AplicarHabilidad</span><span class="kw-white">(Personaje obj)</span><span class="anno">// propio</span></div>
+        <div class="line" style="padding-left:10px; color:var(--dim);">si _desarmar → obj.QuitarEquipo()</div>
+        <div class="line" style="padding-left:10px; font-size:0.62rem; color:var(--muted);">⚠ AplicarHabilidad NO existe en Personaje</div>
+        <div class="line" style="padding-left:10px; font-size:0.62rem; color:var(--muted);">    → se llama con pattern matching: p is Zamuray z</div>
+      </div>
+    </div>
+
+  </div><!-- fin hijas -->
+
+  <!-- ── FILA: conceptos clave ── -->
+  <div class="concept-row">
+
+    <div class="concept-card cc-purple">
+      <div class="concept-title" style="color:var(--purple)">🔀 virtual / override</div>
+      <div class="concept-def">
+        <b style="color:var(--purple)">virtual</b> en el padre = "este método <u>puede</u> ser reemplazado".<br>
+        <b style="color:var(--amber)">override</b> en la hija = "lo reemplazo con mi versión".<br>
+        Sin ambos, C# ejecuta siempre la versión del padre.
+      </div>
+      <div class="concept-code" style="border-color:var(--purple)">
+        <span class="kw-virt">virtual</span> <span class="kw-white">→ padre propone</span><br>
+        <span class="kw-over">override</span> <span class="kw-white">→ hija responde</span>
+      </div>
+    </div>
+
+    <div class="concept-card cc-teal">
+      <div class="concept-title" style="color:var(--teal)">📞 base() y base.Metodo()</div>
+      <div class="concept-def">
+        <b style="color:var(--teal)">base(n,v,a)</b> en el constructor → delega al padre la inicialización de los campos heredados.<br>
+        <b style="color:var(--teal)">base.Metodo()</b> en un override → ejecuta la lógica del padre antes/después de la propia.
+      </div>
+      <div class="concept-code" style="border-color:var(--teal)">
+        <span style="color:var(--teal)">base</span><span class="kw-white">(n,v,a) → constructor padre</span><br>
+        <span style="color:var(--teal)">base</span><span class="kw-white">.RecibirDanio(d) → Sacerdote</span>
+      </div>
+    </div>
+
+    <div class="concept-card cc-red">
+      <div class="concept-title" style="color:var(--red)">🔒 Encapsulación</div>
+      <div class="concept-def">
+        Atributos <b style="color:var(--red)">private</b> = el estado interno solo lo modifica la propia clase.<br>
+        Getters <b style="color:var(--blue)">public</b> = única puerta de lectura.<br>
+        Cada hija encapsula sus propios atributos extra (_furia, _desarmar).
+      </div>
+      <div class="concept-code" style="border-color:var(--red)">
+        <span class="kw-priv">private</span> <span class="kw-white">int _furia;</span><br>
+        <span class="kw-pub">public</span> <span class="kw-white">int GetVida() =&gt; _vida;</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── POLIMORFISMO ── -->
+  <div class="poly-row">
+    <div class="poly-title">⚡ POLIMORFISMO — dispatch dinámico (el núcleo del juego)</div>
+    <div class="poly-grid">
+
+      <div class="poly-block">
+        <div class="poly-block-title" style="color:var(--green)">Tipo declarado vs tipo real</div>
+        <div class="line"><span class="kw-white">Personaje</span><span class="kw-dim"> p = new </span><span class="kw-green">Barbaro</span><span class="kw-dim">(...)</span></div>
+        <div style="font-size:0.62rem; color:var(--muted); margin:4px 0 6px;">variable tipo base → objeto tipo hija</div>
+        <div class="line"><span class="kw-dim">p.</span><span class="kw-purple">CalcularDanio</span><span class="kw-dim">();</span></div>
+        <div style="font-size:0.62rem; color:var(--green); margin-top:3px;">→ C# ejecuta el <b>override de Bárbaro</b>, no la base</div>
+        <div style="font-size:0.62rem; color:var(--muted); margin-top:2px;">esto es late binding / despacho dinámico</div>
+      </div>
+
+      <div class="poly-block">
+        <div class="poly-block-title" style="color:var(--amber)">En Batalla() — mismo código, distintos tipos</div>
+        <div class="line"><span class="kw-white">Batalla</span><span class="kw-dim">(</span><span class="kw-white">Personaje</span><span class="kw-dim"> p1, </span><span class="kw-white">Personaje</span><span class="kw-dim"> p2)</span></div>
+        <div style="font-size:0.62rem; color:var(--muted); margin:4px 0 2px;">p1 puede ser Barbaro, Sacerdote o Zamuray</div>
+        <div class="line"><span class="kw-dim">int d1 = p1.</span><span class="kw-purple">CalcularDanio</span><span class="kw-dim">();</span></div>
+        <div class="line"><span class="kw-dim">p2.</span><span class="kw-purple">AplicarDanio</span><span class="kw-dim">(d1);</span></div>
+        <div style="font-size:0.62rem; color:var(--amber); margin-top:4px;">→ Batalla() no sabe ni necesita saber el tipo real</div>
+      </div>
+
+      <div class="poly-block">
+        <div class="poly-block-title" style="color:var(--purple)">Pattern matching — is + cast</div>
+        <div class="line"><span class="kw-dim">if (p1 </span><span class="kw-over">is</span><span class="kw-dim"> </span><span class="kw-green">Zamuray</span><span class="kw-dim"> z)</span></div>
+        <div class="line" style="padding-left:10px;"><span class="kw-dim">z.</span><span class="kw-purple">AplicarHabilidad</span><span class="kw-dim">(p2);</span></div>
+        <div style="font-size:0.62rem; color:var(--muted); margin:4px 0;">AplicarHabilidad no existe en Personaje → necesita el tipo concreto</div>
+        <div style="font-size:0.62rem; color:var(--purple);">→ <b>is</b> verifica el tipo real en runtime y castea</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── COMPARATIVA override con/sin base ── -->
+  <div class="compare-row">
+
+    <div class="compare-card" style="border-color:#2a1500;">
+      <div class="compare-title" style="color:var(--amber)">⚠ override sin base.Metodo() — REEMPLAZA</div>
+      <div style="font-size:0.68rem; color:var(--dim); margin-bottom:8px;">La lógica del padre desaparece. La hija hace todo.</div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:0.68rem; background:#0d1117; border-radius:6px; padding:8px; border-left:2px solid var(--amber); line-height:1.7;">
+        <span class="kw-dim">// Bárbaro — reemplaza CalcularDanio()</span><br>
+        <span class="kw-pub">public</span> <span class="kw-over">override</span> <span class="kw-white">int CalcularDanio()</span><br>
+        <span class="kw-white">{</span><br>
+        &nbsp;&nbsp;<span class="kw-dim">// furia, cálculo propio...</span><br>
+        &nbsp;&nbsp;<span class="kw-dim">// nunca llama base.CalcularDanio()</span><br>
+        &nbsp;&nbsp;<span class="kw-pub">return</span> <span class="kw-white">(int)(danioBase * 1.15);</span><br>
+        <span class="kw-white">}</span>
+      </div>
+    </div>
+
+    <div class="compare-card" style="border-color:#003320;">
+      <div class="compare-title" style="color:var(--green)">✔ override con base.Metodo() — EXTIENDE</div>
+      <div style="font-size:0.68rem; color:var(--dim); margin-bottom:8px;">Primero lógica propia, luego delega al padre para el resto.</div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:0.68rem; background:#0d1117; border-radius:6px; padding:8px; border-left:2px solid var(--green); line-height:1.7;">
+        <span class="kw-dim">// Sacerdote — extiende RecibirDanio()</span><br>
+        <span class="kw-pub">public</span> <span class="kw-over">override</span> <span class="kw-white">void RecibirDanio(int danio)</span><br>
+        <span class="kw-white">{</span><br>
+        &nbsp;&nbsp;<span class="kw-dim">// lógica propia: plegaria 25%</span><br>
+        &nbsp;&nbsp;<span class="kw-white">if (Random...) danio /= 2;</span><br>
+        &nbsp;&nbsp;<span style="color:var(--teal)">base</span><span class="kw-white">.RecibirDanio(danio);</span> <span class="kw-dim">// ← padre</span><br>
+        <span class="kw-white">}</span>
+      </div>
+    </div>
+
+  </div>
+
+</div><!-- fin grid -->
+
+<div class="footer">
+  ⚔ POO C# · IPVG · Trabajo Ev1 · Interrogación 15 Abril
+</div>
+
+</body>
+</html>
